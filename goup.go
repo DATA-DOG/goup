@@ -72,9 +72,9 @@ func main() {
 		}
 	}()
 
-	for _, goFile := range prj.watched {
-		if err := watcher.Add(goFile); err != nil {
-			logger.Fatalf("failed to register: %s - %v", goFile, err)
+	for _, pkgDir := range prj.watched {
+		if err := watcher.Add(pkgDir); err != nil {
+			logger.Fatalf("failed to register: %s - %v", pkgDir, err)
 		}
 	}
 
