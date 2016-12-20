@@ -14,7 +14,9 @@ Main features:
 - **goup** itself has no options.
 - does not use **go build** but rather **go install** which increases
   restart performance dramatically.
-- can watch applications outside **$GOPATH**
+- can watch applications outside **$GOPATH** run it like
+  `GOBIN=$GOPATH/bin goup -my-cmd-option args < stdin` or export
+  **$GOBIN**
 - tracks all dependent non **$GOROOT** packages, including all in
   **$GOPATH**, except in `vendor` directories.
 - restarts only if **go install** was successful, so you do not have
