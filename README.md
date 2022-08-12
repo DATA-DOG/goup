@@ -23,3 +23,5 @@ Main features:
   failed state.
 - is about **200 loc** simple to copy and adapt to your custom needs.
 
+Configuration:
+- By default applications are killed using the `TERM` signal. This can be configured to the `INT` signal by setting the `GOUP_TERM_SIGNAL` environment variable to either `TERM` or `INT`.
