@@ -39,7 +39,6 @@ type project struct {
 }
 
 func main() {
-	panic(os.Getenv("GOUP_TERM_SIGNAL"))
 	prj, err := read()
 	if err != nil {
 		logger.Fatalf("failed import: %v", err)
