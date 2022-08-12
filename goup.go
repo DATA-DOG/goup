@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"go/build"
 	"io"
 	"io/ioutil"
@@ -23,6 +24,8 @@ var logger = log.New(os.Stderr, "goup -> ", 0)
 var watchOps = []fsnotify.Op{fsnotify.Write, fsnotify.Create, fsnotify.Remove}
 var watchExt = []string{".go"}
 
+var termSignal = os.Getenv("GOUP_TERM_SIGNAL")
+
 type project struct {
 	Name   string
 	Deps   []string
@@ -40,6 +43,10 @@ func main() {
 	if err != nil {
 		logger.Fatalf("failed import: %v", err)
 	}
+
+	// Ensure term-signal flag is valid
+	getTermSignal()
+	logger.Printf("using termination signal: %s", termSignal)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -87,11 +94,22 @@ func main() {
 	<-done
 }
 
+// Get the signal used to terminal signals.
+func getTermSignal() syscall.Signal {
+	if termSignal == "INT" {
+		return syscall.SIGINT
+	} else if termSignal == "TERM" || termSignal == "" {
+		return syscall.SIGTERM
+	} else {
+		panic(fmt.Sprintf("invalid GOUP_TERM_SIGNAL value: %s", termSignal))
+	}
+}
+
 func (p *project) terminate() {
 	// send termination signal, to running application
 	if p.cmd != nil && p.cmd.Process != nil {
 		logger.Println("terminating process:", p.cmd.Process.Pid)
-		if err := p.cmd.Process.Signal(syscall.SIGTERM); err != nil {
+		if err := p.cmd.Process.Signal(getTermSignal()); err != nil {
 			logger.Println("failed to terminate:", p.cmd.Process.Pid, "reason:", err)
 		}
 	}
